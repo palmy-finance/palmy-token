@@ -1,0 +1,78 @@
+import { InitializableAdminUpgradeabilityProxy } from './../../types/InitializableAdminUpgradeabilityProxy.d';
+import { task } from 'hardhat/config';
+import { eContractid } from '../../helpers/types';
+import {
+  getPlmyToken,
+  getPlmyTokenImpl,
+  getContract,
+  getTokenVesting,
+  getPalmyRewardsVault,
+  getPalmyRewardsVaultProxy,
+} from '../../helpers/contracts-helpers';
+import { waitForTx } from '../../helpers/misc-utils';
+import { ZERO_ADDRESS } from '../../helpers/constants';
+
+const { PlmyToken } = eContractid;
+
+task(`initialize-${PlmyToken}`, `Initialize the ${PlmyToken} proxy contract`)
+  .addParam('admin', `The address to be added as an Admin role in ${PlmyToken} Transparent Proxy.`)
+  .addFlag('onlyProxy', 'Initialize only the proxy contract, not the implementation contract')
+  .setAction(async ({ admin: plmyAdmin, onlyProxy }, localBRE) => {
+    await localBRE.run('set-dre');
+
+    if (!plmyAdmin) {
+      throw new Error(
+        `Missing --admin parameter to add the Admin Role to ${PlmyToken} Transparent Proxy`
+      );
+    }
+
+    if (!localBRE.network.config.chainId) {
+      throw new Error('INVALID_CHAIN_ID');
+    }
+
+    console.log(`\n- ${PlmyToken} initialization`);
+
+    const plmyTokenImpl = await getPlmyTokenImpl();
+    const plmyToken = await getPlmyToken();
+    const tokenVesting = await getTokenVesting();
+    const rewardsVault = await getPalmyRewardsVaultProxy();
+    const plmyTokenProxy = await getContract<InitializableAdminUpgradeabilityProxy>(
+      eContractid.InitializableAdminUpgradeabilityProxy,
+      plmyToken.address
+    );
+
+    if (onlyProxy) {
+      console.log(
+        `\tWARNING: Not initializing the ${PlmyToken} implementation, only set PLMY_ADMIN to Transparent Proxy contract.`
+      );
+      await waitForTx(
+        await plmyTokenProxy.functions['initialize(address,address,bytes)'](
+          plmyTokenImpl.address,
+          tokenVesting.address,
+          '0x'
+        )
+      );
+      console.log(
+        `\tFinished ${PlmyToken} Proxy initialization, but not ${PlmyToken} implementation.`
+      );
+      return;
+    }
+
+    console.log('\tInitializing Plmy Token and Transparent Proxy');
+    // If any other testnet, initialize for development purposes
+    const plmyTokenEncodedInitialize = plmyTokenImpl.interface.encodeFunctionData('initialize', [
+      tokenVesting.address,
+      rewardsVault.address,
+      ZERO_ADDRESS,
+    ]);
+
+    await waitForTx(
+      await plmyTokenProxy['initialize(address,address,bytes)'](
+        plmyTokenImpl.address,
+        plmyAdmin,
+        plmyTokenEncodedInitialize
+      )
+    );
+
+    console.log('\tFinished Plmy Token and Transparent Proxy initialization');
+  });
