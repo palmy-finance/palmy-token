@@ -13,7 +13,7 @@ contract MockTokenVesting is TokenVesting{
     uint256 mockTime = 0;
         IERC20 immutable private _token;
 
-    constructor(address token_) TokenVesting(token_){
+    constructor(address token_, address owner) TokenVesting(token_, owner){
         _token = IERC20(token_);
     }
 

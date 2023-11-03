@@ -35,7 +35,10 @@ const buildTestEnv = async (deployer: Signer, secondaryWallet: Signer) => {
 
   const plmyTokenImpl = await deployPlmyToken();
   const plmyTokenProxy = await deployInitializableAdminUpgradeabilityProxy();
-  const mockTokenVesting = await deployMockVesting(plmyTokenProxy.address);
+  const mockTokenVesting = await deployMockVesting(
+    plmyTokenProxy.address,
+    await deployer.getAddress()
+  );
   await insertContractAddressInDb(eContractid.MockTokenVesting, mockTokenVesting.address);
 
   const mockTransferHook = await deployMockTransferHook();

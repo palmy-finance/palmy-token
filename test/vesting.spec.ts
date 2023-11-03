@@ -35,12 +35,24 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
   });
 
   describe('Vesting', function () {
+    it('Transfer ownership', async function () {
+      const [owner, deployer, newOwner] = await getEthersSigners();
+      const tokenVesting = await TokenVesting.connect(deployer).deploy(
+        testToken.address,
+        await owner.getAddress()
+      );
+      await tokenVesting.deployed();
+      expect(await tokenVesting.owner()).to.equal(await owner.getAddress());
+      await tokenVesting.connect(owner).transferOwnership(await newOwner.getAddress());
+      expect(await tokenVesting.owner()).to.equal(await newOwner.getAddress());
+    });
+
     it('Should assign the total supply of tokens to the owner', async function () {
       const ownerBalance = await testToken.balanceOf(await owner.getAddress());
       expect(await testToken.totalSupply()).to.equal(ownerBalance);
     });
     it('Should not be bested for zero_address', async function () {
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       const baseTime = 1622551248;
       const startTime = baseTime;
@@ -64,7 +76,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
     });
     it('Should vest tokens gradually', async function () {
       // deploy vesting contract
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       expect((await tokenVesting.getToken()).toString()).to.equal(testToken.address);
       // send tokens to vesting contract
@@ -220,7 +232,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
 
     it('Should release vested tokens if revoked', async function () {
       // deploy vesting contract
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       expect((await tokenVesting.getToken()).toString()).to.equal(testToken.address);
       // send tokens to vesting contract
@@ -264,7 +276,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
     });
 
     it('Should compute vesting schedule index', async function () {
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       const expectedVestingScheduleId =
         '0xa8909b0a2e8f76be8065132f39e600bec192b207b7d16b11104c07ed081cb681';
@@ -281,7 +293,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
     });
 
     it('Should check input parameters for createVestingSchedule method', async function () {
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       await testToken.transfer(tokenVesting.address, 1000);
       const time = Date.now();
@@ -296,7 +308,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
       ).to.be.revertedWith('TokenVesting: amount must be > 0');
     });
     it('Should check allocation per month for investor', async function () {
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       const amountTotal = parseEther('20000000');
       const perMonth = amountTotal.div(18);
@@ -321,7 +333,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
       expect(await tokenVesting.computeReleasableAmount(schedule)).to.eq(amountTotal);
     });
     it('Should check allocation per month for early contributor', async function () {
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       const amountTotal = parseEther('100000000');
       const perMonth = amountTotal.div(18);
@@ -346,7 +358,7 @@ makeSuite('Delegation', (testEnv: TestEnv) => {
       expect(await tokenVesting.computeReleasableAmount(schedule)).to.eq(amountTotal);
     });
     it('Should check allocation per month for team', async function () {
-      const tokenVesting = await TokenVesting.deploy(testToken.address);
+      const tokenVesting = await TokenVesting.deploy(testToken.address, await owner.getAddress());
       await tokenVesting.deployed();
       const amountTotal = parseEther('25000000');
       const per2Month = amountTotal.div(3);

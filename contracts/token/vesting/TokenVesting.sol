@@ -5,16 +5,17 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "../../utils/PalmyOwnable.sol";
 
 /**
  * @title TokenVesting
  */
-contract TokenVesting is Ownable, ReentrancyGuard{
+contract TokenVesting is PalmyOwnable, ReentrancyGuard{
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
+
     struct VestingSchedule{
         bool initialized;
         // beneficiary of tokens after they are released
@@ -79,7 +80,7 @@ contract TokenVesting is Ownable, ReentrancyGuard{
      * @dev Creates a vesting contract.
      * @param token_ address of the ERC20 token contract
      */
-    constructor(address token_) {
+    constructor(address token_, address owner) PalmyOwnable(owner) {
         require(token_ != address(0x0));
         _token = IERC20(token_);
     }
