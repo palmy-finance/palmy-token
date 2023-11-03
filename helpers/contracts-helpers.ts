@@ -115,9 +115,9 @@ export const deployRewardsVault = async (verify?: boolean): Promise<PalmyRewards
 export const deployMintableErc20 = async ([name, symbol, decimals]: [string, string, number]) =>
   await deployContract<MintableErc20>(eContractid.MintableErc20, [name, symbol, decimals]);
 
-export const deployVesting = async (plmyTokenAddress: string, verify?: boolean) => {
+export const deployVesting = async (plmyTokenAddress: string, owner: string, verify?: boolean) => {
   const id = eContractid.TokenVesting;
-  const args = [plmyTokenAddress];
+  const args = [plmyTokenAddress, owner];
   const instance = await deployContract<TokenVesting>(id, args);
   await instance.deployTransaction.wait();
   if (verify) {
@@ -126,9 +126,13 @@ export const deployVesting = async (plmyTokenAddress: string, verify?: boolean) 
   return instance;
 };
 
-export const deployMockVesting = async (plmyTokenAddress: string, verify?: boolean) => {
+export const deployMockVesting = async (
+  plmyTokenAddress: string,
+  owner: string,
+  verify?: boolean
+) => {
   const id = eContractid.MockTokenVesting;
-  const args = [plmyTokenAddress];
+  const args = [plmyTokenAddress, owner];
   const instance = await deployContract<MockTokenVesting>(id, args);
   await instance.deployTransaction.wait();
   if (verify) {
