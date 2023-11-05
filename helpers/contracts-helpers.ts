@@ -5,7 +5,7 @@ import { MockTokenVesting } from './../types/MockTokenVesting.d';
 import { TokenVesting } from './../types/TokenVesting.d';
 import { PlmyTokenV2 } from './../types/PlmyTokenV2.d';
 import { PlmyToken } from './../types/PlmyToken.d';
-import { Contract, Signer, utils, ethers } from 'ethers';
+import { Contract, Signer, utils, ethers, BytesLike } from 'ethers';
 
 import { getDb, DRE, waitForTx } from './misc-utils';
 import { tEthereumAddress, eContractid, tStringTokenSmallUnits } from './types';
@@ -19,6 +19,19 @@ import { fromRpcSig, ECDSASignature } from 'ethereumjs-util';
 import { DoubleTransferHelper } from '../types/DoubleTransferHelper';
 import { MockTransferHook } from '../types/MockTransferHook';
 import { verifyContract } from './etherscan-verification';
+
+export const saveDeploymentCallData = async (contractId: string, callData: BytesLike) => {
+  const currentNetwork = DRE.network.name;
+  // save calldata into .deployments/calldata/<network>/<contractId>.calldata
+  const fs = require('fs');
+  const path = require('path');
+  const dir = path.join(__dirname, '..', '..', '.deployments', 'calldata', currentNetwork);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const fileName = path.join(dir, `${contractId}.calldata`);
+  fs.writeFileSync(fileName, callData);
+};
 
 export const registerContractInJsonDb = async (contractId: string, contractInstance: Contract) => {
   const currentNetwork = DRE.network.name;
@@ -64,14 +77,26 @@ export const decodeAbiNumber = (data: string): number =>
 
 const deployContract = async <ContractType extends Contract>(
   contractName: string,
-  args: any[]
+  args: any[],
+  verify?: boolean
 ): Promise<ContractType> => {
   const contract = (await (
     await DRE.ethers.getContractFactory(contractName)
   ).deploy(...args)) as ContractType;
   await waitForTx(contract.deployTransaction);
   await registerContractInJsonDb(<eContractid>contractName, contract);
+  await contract.deployTransaction.wait();
+  if (verify) {
+    await verifyContract(contractName, contract.address, args);
+  }
   return contract;
+};
+
+const getDeploymentCallData = async (contractName: string, args: any[]): Promise<BytesLike> => {
+  const contract = (await DRE.ethers.getContractFactory(contractName)).getDeployTransaction(
+    ...args
+  );
+  return contract.data!;
 };
 
 export const getContract = async <ContractType extends Contract>(
@@ -90,6 +115,12 @@ export const deployPlmyToken = async (verify?: boolean) => {
   return instance;
 };
 
+export const exportPlmyTokenDeploymentCallData = async () => {
+  const id = eContractid.PlmyToken;
+  const args: string[] = [];
+  return await getDeploymentCallData(id, args);
+};
+
 export const deployPlmyTokenV2 = async (verify?: boolean): Promise<PlmyTokenV2> => {
   const id = eContractid.PlmyTokenV2;
   const args: string[] = [];
@@ -101,6 +132,12 @@ export const deployPlmyTokenV2 = async (verify?: boolean): Promise<PlmyTokenV2> 
   return instance;
 };
 
+export const exportPlmyTokenV2DeploymentCallData = async () => {
+  const id = eContractid.PlmyTokenV2;
+  const args: string[] = [];
+  return await getDeploymentCallData(id, args);
+};
+
 export const deployRewardsVault = async (verify?: boolean): Promise<PalmyRewardsVault> => {
   const id = eContractid.PalmyRewardsVault;
   const args: string[] = [];
@@ -110,6 +147,12 @@ export const deployRewardsVault = async (verify?: boolean): Promise<PalmyRewards
     await verifyContract(id, instance.address, args);
   }
   return instance;
+};
+
+export const exportRewardsVaultCallData = async () => {
+  const id = eContractid.PalmyRewardsVault;
+  const args: string[] = [];
+  return await getDeploymentCallData(id, args);
 };
 
 export const deployMintableErc20 = async ([name, symbol, decimals]: [string, string, number]) =>
@@ -124,6 +167,12 @@ export const deployVesting = async (plmyTokenAddress: string, owner: string, ver
     await verifyContract(id, instance.address, args);
   }
   return instance;
+};
+
+export const exportVestingDeploymentCallData = async () => {
+  const id = eContractid.TokenVesting;
+  const args: string[] = [];
+  return await getDeploymentCallData(id, args);
 };
 
 export const deployMockVesting = async (
@@ -173,6 +222,12 @@ export const deployInitializableAdminUpgradeabilityProxy = async (verify?: boole
     await verifyContract(id, instance.address, args);
   }
   return instance;
+};
+
+export const exportInitializableAdminUpgradeabilityProxyCallData = async () => {
+  const id = eContractid.InitializableAdminUpgradeabilityProxy;
+  const args: string[] = [];
+  return await getDeploymentCallData(id, args);
 };
 
 export const getPlmyToken = async (address?: tEthereumAddress) => {

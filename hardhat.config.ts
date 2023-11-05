@@ -103,12 +103,12 @@ const config: HardhatUserConfig = {
         count: 20,
       },
     },
-    astar: {
-      url: 'https://rpc.astar.network:8545',
+    oasys: {
+      url: 'https://rpc.mainnet.oasys.games',
       hardfork: HARDFORK,
       blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
       gasMultiplier: DEFAULT_GAS_PRICE,
-      chainId: 592,
+      chainId: 248,
       accounts: {
         mnemonic: MNEMONIC,
         path: MNEMONIC_PATH,
