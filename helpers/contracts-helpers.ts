@@ -23,9 +23,11 @@ import { verifyContract } from './etherscan-verification';
 export const saveDeploymentCallData = async (contractId: string, callData: BytesLike) => {
   const currentNetwork = DRE.network.name;
   // save calldata into .deployments/calldata/<network>/<contractId>.calldata
-  const fs = require('fs');
+  // directory of this file
   const path = require('path');
-  const dir = path.join(__dirname, '..', '..', '.deployments', 'calldata', currentNetwork);
+  const fs = require('fs');
+  const dir = path.join(__dirname, '..', '.deployments', 'calldata', currentNetwork);
+
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -169,9 +171,9 @@ export const deployVesting = async (plmyTokenAddress: string, owner: string, ver
   return instance;
 };
 
-export const exportVestingDeploymentCallData = async () => {
+export const exportVestingDeploymentCallData = async (initialOwner: string) => {
   const id = eContractid.TokenVesting;
-  const args: string[] = [];
+  const args: string[] = [initialOwner];
   return await getDeploymentCallData(id, args);
 };
 

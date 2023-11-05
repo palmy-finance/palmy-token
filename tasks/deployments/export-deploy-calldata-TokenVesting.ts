@@ -7,6 +7,8 @@ import {
   exportVestingDeploymentCallData,
 } from '../../helpers/contracts-helpers';
 import { eContractid } from '../../helpers/types';
+import { getVestingOwnerPerNetwork } from '../../helpers/constants';
+import { eEthereumNetwork } from '../../helpers/types-common';
 
 const { TokenVesting } = eContractid;
 
@@ -15,6 +17,7 @@ task(
   `Export deployment calldata of the ${TokenVesting} contract`
 ).setAction(async ({}, localBRE) => {
   await localBRE.run('set-dre');
+  const network = localBRE.network.name as eEthereumNetwork;
 
   if (!localBRE.network.config.chainId) {
     throw new Error('INVALID_CHAIN_ID');
@@ -23,7 +26,9 @@ task(
   console.log(`\n- ${TokenVesting} exporting...`);
 
   console.log(`\Exporting ${TokenVesting} calldata ...`);
-  const tokenVesting = await exportVestingDeploymentCallData();
+  const tokenVesting = await exportVestingDeploymentCallData(
+    await getVestingOwnerPerNetwork(network)
+  );
   await saveDeploymentCallData(TokenVesting, tokenVesting);
   console.log(`\tFinished ${TokenVesting} implementation exporting`);
 });
