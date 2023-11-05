@@ -31,7 +31,6 @@ export interface iParamsPerNetwork<T> {
   [eEthereumNetwork.coverage]: T;
   [eEthereumNetwork.hardhat]: T;
   [eEthereumNetwork.kovan]: T;
-  [eEthereumNetwork.shibuya]: T;
-  [eEthereumNetwork.shiden]: T;
-  [eEthereumNetwork.astar]: T;
+  [eEthereumNetwork.oasys]: T;
+  [eEthereumNetwork.testnet]: T;
 }
