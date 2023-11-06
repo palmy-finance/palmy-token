@@ -40,8 +40,7 @@
     "astar:initialize-PlmyToken": "npm run hardhat-astar -- initialize-PlmyToken --admin ${PLMY_ADMIN:-''} --onlyProxy",
     "oasys:exporting": "npm run hardhat-oasys -- oasys-deployment",
     "testnet:deployment": "npm run hardhat-testnet -- oasys-deployment",
-    "ci:clean": "rm -rf ./artifacts ./cache ./types",
-    "cancel": "npm run hardhat-testnet cancel-tx"
+    "ci:clean": "rm -rf ./artifacts ./cache ./types"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",
