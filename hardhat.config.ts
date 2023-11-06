@@ -116,6 +116,19 @@ const config: HardhatUserConfig = {
         count: 20,
       },
     },
+    testnet: {
+      url: 'https://rpc.testnet.oasys.games',
+      hardfork: HARDFORK,
+      blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT * 30,
+      gasMultiplier: DEFAULT_GAS_PRICE * 30,
+      chainId: 9372,
+      accounts: {
+        mnemonic: MNEMONIC,
+        path: MNEMONIC_PATH,
+        initialIndex: 0,
+        count: 20,
+      },
+    },
     hardhat: {
       hardfork: 'istanbul',
       blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,

@@ -11,7 +11,7 @@
     "hardhat-kovan": "cross-env hardhat --network kovan",
     "hardhat-ropsten": "cross-env hardhat --network ropsten",
     "hardhat-shiden": "cross-env hardhat --network shiden",
-    "hardhat-shibuya": "cross-env hardhat --network shibuya",
+    "hardhat-testnet": "cross-env hardhat --network testnet",
     "hardhat-oasys": "cross-env hardhat --network oasys",
     "hardhat-docker": "hardhat --network hardhatevm_docker",
     "hardhat help": "hardhat help",
@@ -39,7 +39,9 @@
     "shiden:initialize-PlmyToken": "npm run hardhat-shiden -- initialize-PlmyToken --admin ${PLMY_ADMIN:-''} --onlyProxy",
     "astar:initialize-PlmyToken": "npm run hardhat-astar -- initialize-PlmyToken --admin ${PLMY_ADMIN:-''} --onlyProxy",
     "oasys:exporting": "npm run hardhat-oasys -- oasys-deployment",
-    "ci:clean": "rm -rf ./artifacts ./cache ./types"
+    "testnet:deployment": "npm run hardhat-testnet -- oasys-deployment",
+    "ci:clean": "rm -rf ./artifacts ./cache ./types",
+    "cancel": "npm run hardhat-testnet cancel-tx"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",

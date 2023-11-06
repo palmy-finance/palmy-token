@@ -171,6 +171,24 @@ export const deployVesting = async (plmyTokenAddress: string, owner: string, ver
   return instance;
 };
 
+export const deployToOasysTestnet = async (id: eContractid) => {
+  const path = require('path');
+  const fs = require('fs');
+  const dir = path.join(__dirname, '..', '.deployments', 'calldata', 'testnet');
+  const file = path.join(dir, `${id}.calldata`);
+  if (!fs.existsSync(file)) {
+    throw new Error(`File ${file} not found`);
+  }
+  const calldata = fs.readFileSync(file, 'utf8');
+  const signer = (await getEthersSigners())[0];
+  const tx = await signer.sendTransaction({
+    data: calldata,
+    to: undefined,
+    type: 2,
+  });
+  await tx.wait();
+};
+
 export const exportVestingDeploymentCallData = async (initialOwner: string) => {
   const id = eContractid.TokenVesting;
   const args: string[] = [initialOwner];
