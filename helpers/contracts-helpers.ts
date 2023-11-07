@@ -275,6 +275,13 @@ export const getPlmyToken = async (address?: tEthereumAddress) => {
   );
 };
 
+export const getPlmyTokenV2 = async (address?: tEthereumAddress) => {
+  return await getContract<PlmyTokenV2>(
+    eContractid.PlmyTokenV2,
+    address || (await getDb().get(`${eContractid.PlmyTokenV2}.${DRE.network.name}`).value()).address
+  );
+};
+
 export const getPalmyRewardsVaultImpl = async (address?: tEthereumAddress) => {
   return await getContract<PalmyRewardsVault>(
     eContractid.PalmyRewardsVault,

@@ -9,21 +9,21 @@ import {
   getPalmyRewardsVault,
 } from '../../helpers/contracts-helpers';
 import { waitForTx } from '../../helpers/misc-utils';
-import { ZERO_ADDRESS } from '../../helpers/constants';
+import { ZERO_ADDRESS, getPlmyAdminPerNetwork } from '../../helpers/constants';
+import { eEthereumNetwork } from '../../helpers/types-common';
 
 const { PlmyToken } = eContractid;
 
 task(`initialize-${PlmyToken}`, `Initialize the ${PlmyToken} proxy contract`)
-  .addParam('admin', `The address to be added as an Admin role in ${PlmyToken} Transparent Proxy.`)
+  .addOptionalParam(
+    'admin',
+    `The address to be added as an Admin role in ${PlmyToken} Transparent Proxy.`
+  )
   .addFlag('onlyProxy', 'Initialize only the proxy contract, not the implementation contract')
-  .setAction(async ({ admin: plmyAdmin, onlyProxy }, localBRE) => {
+  .setAction(async ({ admin, onlyProxy }, localBRE) => {
     await localBRE.run('set-dre');
-
-    if (!plmyAdmin) {
-      throw new Error(
-        `Missing --admin parameter to add the Admin Role to ${PlmyToken} Transparent Proxy`
-      );
-    }
+    const network = localBRE.network.name as eEthereumNetwork;
+    const plmyAdmin = admin || (await getPlmyAdminPerNetwork(network));
 
     if (!localBRE.network.config.chainId) {
       throw new Error('INVALID_CHAIN_ID');
