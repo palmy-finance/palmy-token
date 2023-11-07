@@ -134,7 +134,7 @@ contract PlmyToken is ERC20, VersionedInitializable {
    * @dev Writes a snapshot for an owner of tokens
    * @param owner The owner of the tokens
    * @param oldValue The value before the operation that is gonna be executed after the snapshot
-   * @param newValue The value vaultAddressafter the operation
+   * @param newValue The value after the operation
    */
   function _writeSnapshot(address owner, uint128 oldValue, uint128 newValue) internal {
     uint128 currentBlock = uint128(block.number);
