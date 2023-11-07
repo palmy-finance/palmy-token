@@ -1,8 +1,8 @@
 import { MockIncentivesController } from './../../types/MockIncentivesController.d';
 import {
+  getMintableErc20,
   getMockIncentivesController,
   getPalmyRewardsVault,
-  getPalmyRewardsVaultProxy,
 } from './../../helpers/contracts-helpers';
 import { PlmyToken } from './../../types/PlmyToken.d';
 import { evmRevert, evmSnapshot, DRE } from '../../helpers/misc-utils';
@@ -21,6 +21,7 @@ import bignumberChai from 'chai-bignumber';
 import { MockTransferHook } from '../../types/MockTransferHook';
 import { MockTokenVesting } from '../../types/MockTokenVesting';
 import { PalmyRewardsVault } from '../../types/PalmyRewardsVault';
+import { MintableErc20 } from '../../types/MintableErc20';
 
 chai.use(bignumberChai());
 
@@ -36,6 +37,7 @@ export interface TestEnv {
   mockVesting: MockTokenVesting;
   rewardsVault: PalmyRewardsVault;
   mockIncentivesController: MockIncentivesController;
+  mockRewardToken: MintableErc20;
 }
 
 let buidlerevmSnapshotId: string = '0x1';
@@ -52,6 +54,7 @@ const testEnv: TestEnv = {
   mockTransferHook: {} as MockTransferHook,
   mockVesting: {} as MockTokenVesting,
   mockIncentivesController: {} as MockIncentivesController,
+  mockRewardToken: {} as MintableErc20,
 } as TestEnv;
 
 export async function initializeMakeSuite() {
@@ -73,6 +76,7 @@ export async function initializeMakeSuite() {
   testEnv.mockVesting = await getMockTokenVesting();
   testEnv.rewardsVault = await getPalmyRewardsVault();
   testEnv.mockIncentivesController = await getMockIncentivesController();
+  testEnv.mockRewardToken = await getMintableErc20();
 }
 
 export function makeSuite(name: string, tests: (testEnv: TestEnv) => void) {

@@ -1,5 +1,8 @@
 import { InitializableAdminUpgradeabilityProxy__factory } from './../types/factories/InitializableAdminUpgradeabilityProxy__factory';
-import { deployMockIncentivesController } from './../helpers/contracts-helpers';
+import {
+  deployMintableErc20,
+  deployMockIncentivesController,
+} from './../helpers/contracts-helpers';
 import rawBRE from 'hardhat';
 
 import {
@@ -18,10 +21,10 @@ import fs from 'fs';
 import { Signer } from 'ethers';
 
 import { initializeMakeSuite } from './helpers/make-suite';
-import { waitForTx, DRE } from '../helpers/misc-utils';
+import { waitForTx } from '../helpers/misc-utils';
 import { eContractid } from '../helpers/types';
+import { ZERO_ADDRESS } from '../helpers/constants';
 import { parseEther } from 'ethers/lib/utils';
-import { InitializableAdminUpgradeabilityProxy } from '../types/InitializableAdminUpgradeabilityProxy';
 
 ['misc', 'deployments', 'migrations'].forEach((folder) => {
   const tasksPath = path.join(__dirname, '../tasks', folder);
@@ -47,11 +50,11 @@ const buildTestEnv = async (deployer: Signer, secondaryWallet: Signer) => {
   const rewardsVaultProxy = await new InitializableAdminUpgradeabilityProxy__factory(
     deployer
   ).deploy();
-  await insertContractAddressInDb(eContractid.PalmyRewardsVault, rewardsVaultProxy.address);
+  await insertContractAddressInDb(eContractid.PalmyRewardsVaultProxy, rewardsVaultProxy.address);
 
   const plmyTokenEncodedInitialize = plmyTokenImpl.interface.encodeFunctionData('initialize', [
     mockTokenVesting.address,
-    rewardsVaultProxy.address,
+    ZERO_ADDRESS,
     mockTransferHook.address,
   ]);
 
@@ -63,10 +66,13 @@ const buildTestEnv = async (deployer: Signer, secondaryWallet: Signer) => {
     )
   );
   await insertContractAddressInDb(eContractid.PlmyToken, plmyTokenProxy.address);
+  const woas = await deployMintableErc20(['Wrapped OAS', 'WOAS', 18]);
+  await woas.mint(parseEther('1000000000000000000000000000'));
+  await woas.transfer(rewardsVaultProxy.address, parseEther('1000000000000000000000000000'));
 
   const mockIncentivesController = await deployMockIncentivesController(
     rewardsVaultProxy.address,
-    plmyTokenProxy.address
+    woas.address
   );
   await insertContractAddressInDb(
     eContractid.MockIncentivesController,
@@ -74,7 +80,7 @@ const buildTestEnv = async (deployer: Signer, secondaryWallet: Signer) => {
   );
   const rewardsVaultEncodedInitialize = rewardsVaultImpl.interface.encodeFunctionData(
     'initialize',
-    [plmyTokenProxy.address, mockIncentivesController.address]
+    [woas.address, mockIncentivesController.address]
   );
   await waitForTx(
     await rewardsVaultProxy['initialize(address,address,bytes)'](
@@ -83,7 +89,6 @@ const buildTestEnv = async (deployer: Signer, secondaryWallet: Signer) => {
       rewardsVaultEncodedInitialize
     )
   );
-  await insertContractAddressInDb(eContractid.PalmyRewardsVault, rewardsVaultProxy.address);
 
   await insertContractAddressInDb(eContractid.MockTransferHook, mockTransferHook.address);
 
