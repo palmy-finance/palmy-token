@@ -3,8 +3,6 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { eEthereumNetwork } from '../../helpers/types-common';
 import { eContractid } from '../../helpers/types';
-import { checkVerification } from '../../helpers/etherscan-verification';
-import { getPlmyAdminPerNetwork } from '../../helpers/constants';
 require('dotenv').config();
 
 task('token-initialization', 'Contract Initialization').setAction(async ({}, localBRE) => {

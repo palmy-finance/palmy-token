@@ -30,13 +30,25 @@ export const getPlmyTokenDomainSeparatorPerNetwork = (
     network
   );
 
+export const getWOASTokenPerNetwork = (network: eEthereumNetwork): tEthereumAddress => {
+  getParamPerNetwork<tEthereumAddress>(
+    {
+      [eEthereumNetwork.coverage]: ZERO_ADDRESS,
+      [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
+      [eEthereumNetwork.kovan]: ZERO_ADDRESS,
+      [eEthereumNetwork.testnet]: ZERO_ADDRESS, //TODO: fix
+      [eEthereumNetwork.oasys]: ZERO_ADDRESS, //TODO: fix
+    },
+    network
+  );
+
 // PlmyProtoGovernance address as admin of PlmyToken and Migrator
 export const getPlmyAdminPerNetwork = (network: eEthereumNetwork): tEthereumAddress =>
   getParamPerNetwork<tEthereumAddress>(
     {
       [eEthereumNetwork.coverage]: ZERO_ADDRESS,
       [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
-      [eEthereumNetwork.kovan]: ZERO_ADDRESS, // TODO: fix
+      [eEthereumNetwork.kovan]: ZERO_ADDRESS,
       [eEthereumNetwork.testnet]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
       [eEthereumNetwork.oasys]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
     },

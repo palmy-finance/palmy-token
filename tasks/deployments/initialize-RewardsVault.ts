@@ -2,12 +2,12 @@ import { task } from 'hardhat/config';
 import { eContractid } from '../../helpers/types';
 import {
   getEthersSigners,
-  getPlmyToken,
   getPalmyRewardsVaultImpl,
-  getPalmyRewardsVaultProxy,
+  getPalmyRewardsVault,
 } from '../../helpers/contracts-helpers';
 import { waitForTx } from '../../helpers/misc-utils';
-import { ZERO_ADDRESS } from '../../helpers/constants';
+import { ZERO_ADDRESS, getWOASTokenPerNetwork } from '../../helpers/constants';
+import { eEthereumNetwork } from '../../helpers/types-common';
 
 const { PalmyRewardsVault } = eContractid;
 
@@ -27,32 +27,29 @@ task(`initialize-${PalmyRewardsVault}`, `Initialize the ${PalmyRewardsVault} pro
     console.log(`\n- ${PalmyRewardsVault} initialization`);
 
     const rewardsVaultImpl = await getPalmyRewardsVaultImpl();
-    const rewardsVaultProxy = await getPalmyRewardsVaultProxy();
-    const plmyToken = await getPlmyToken('0xb163716cb6c8b0a56e4f57c394A50F173E34181b');
+    const rewardsVaultProxy = await getPalmyRewardsVault();
+    const woas = await getWOASTokenPerNetwork(localBRE.network.name as eEthereumNetwork);
     if (!rewardsVaultImpl.address || rewardsVaultImpl.address == ZERO_ADDRESS) {
       throw new Error('Missing rewardsVaultImpl');
     }
     if (!rewardsVaultProxy.address || rewardsVaultImpl.address == ZERO_ADDRESS) {
       throw new Error('Missing rewardsVaultProxy');
     }
-    if (!plmyToken.address || rewardsVaultImpl.address == ZERO_ADDRESS) {
+    if (!woas || rewardsVaultImpl.address == ZERO_ADDRESS) {
       throw new Error('Missing plmyToken');
     }
     console.log('\tInitializing Vault and Transparent Proxy');
     // If any other testnet, initialize for development purposes
     const rewardsVaultEncodedInitialize = rewardsVaultImpl.interface.encodeFunctionData(
       'initialize',
-      [plmyToken.address, incentivesController]
+      [woas, incentivesController]
     );
     const [admin] = await getEthersSigners();
     await waitForTx(
       await rewardsVaultProxy['initialize(address,address,bytes)'](
         rewardsVaultImpl.address,
         await admin.getAddress(),
-        rewardsVaultEncodedInitialize,
-        {
-          gasLimit: 14000000,
-        }
+        rewardsVaultEncodedInitialize
       )
     );
 

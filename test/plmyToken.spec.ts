@@ -52,7 +52,7 @@ makeSuite('PLMY token', (testEnv: TestEnv) => {
   });
 
   it('Checks the allocation of the initial PLMY supply', async () => {
-    const expectedDistributionBalance = new BigNumber(700000000).times(new BigNumber(10).pow(18));
+    const expectedDistributionBalance = new BigNumber(10000000).times(new BigNumber(10).pow(18));
     const { plmyToken, mockVesting } = testEnv;
     const distributedBalance = await plmyToken.balanceOf(mockVesting.address);
 
@@ -343,7 +343,9 @@ makeSuite('PLMY token', (testEnv: TestEnv) => {
     const { v, r, s } = getSignatureFromTypedData(ownerPrivateKey, msgParams);
 
     await expect(
-      plmyToken.connect(users[1].signer).permit(owner, ZERO_ADDRESS, permitAmount, deadline, v, r, s)
+      plmyToken
+        .connect(users[1].signer)
+        .permit(owner, ZERO_ADDRESS, permitAmount, deadline, v, r, s)
     ).to.be.revertedWith('INVALID_SIGNATURE');
   });
 

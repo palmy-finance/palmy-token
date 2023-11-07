@@ -24,9 +24,9 @@ contract PlmyToken is ERC20, VersionedInitializable {
   uint8 internal constant DECIMALS = 18;
 
   /// @dev the amount being distributed for the PSI and PEI
-  uint256 internal constant DISTRIBUTION_AMOUNT = 700000000 ether;
+  uint256 internal constant DISTRIBUTION_AMOUNT = 10000000 ether;
   /// @dev the amount being distribyted by liquidity miniong incentives
-  uint256 internal constant INCENTIVE_AMOUNT = 300000000 ether;
+  uint256 internal constant INCENTIVE_AMOUNT = 0 ether;
 
   uint256 public constant REVISION = 1;
 
@@ -82,8 +82,12 @@ contract PlmyToken is ERC20, VersionedInitializable {
     _symbol = SYMBOL;
     _setupDecimals(DECIMALS);
     _palmyGovernance = palmyGovernance;
-    _mint(vestingAddress, DISTRIBUTION_AMOUNT);
-    _mint(vaultAddress, INCENTIVE_AMOUNT);
+    if (vestingAddress != address(0)) {
+      _mint(vestingAddress, DISTRIBUTION_AMOUNT);
+    }
+    if (vaultAddress != address(0)) {
+      _mint(vaultAddress, INCENTIVE_AMOUNT);
+    }
   }
 
   /**

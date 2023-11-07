@@ -39,7 +39,9 @@ makeSuite('PLMY token V2', (testEnv: TestEnv) => {
 
     const encodedIntialize = PLMYv2.interface.encodeFunctionData('initialize');
 
-    await plmyTokenProxy.connect(users[0].signer).upgradeToAndCall(PLMYv2.address, encodedIntialize);
+    await plmyTokenProxy
+      .connect(users[0].signer)
+      .upgradeToAndCall(PLMYv2.address, encodedIntialize);
 
     plmyTokenV2 = await getContract(eContractid.PlmyTokenV2, plmyTokenProxy.address);
   });
@@ -69,7 +71,7 @@ makeSuite('PLMY token V2', (testEnv: TestEnv) => {
   });
 
   it('Checks the allocation of the initial PLMY supply', async () => {
-    const expectedDistributionBalance = new BigNumber(700000000).times(new BigNumber(10).pow(18));
+    const expectedDistributionBalance = new BigNumber(10000000).times(new BigNumber(10).pow(18));
     const { mockVesting } = testEnv;
     const distributedBalance = await plmyTokenV2.balanceOf(mockVesting.address);
 
@@ -357,14 +359,14 @@ makeSuite('PLMY token V2', (testEnv: TestEnv) => {
 
   it('Checks the total supply', async () => {
     const totalSupply = await plmyTokenV2.totalSupplyAt('0'); // Supply remains constant due no more mints
-    expect(totalSupply).equal(parseEther('1000000000'));
+    expect(totalSupply).equal(parseEther('10000000'));
   });
   it('Checks the supply for liquidity mining', async () => {
     const { rewardsVault } = testEnv;
-    expect(await plmyTokenV2.balanceOf(rewardsVault.address)).equal(parseEther('300000000'));
+    expect(await plmyTokenV2.balanceOf(rewardsVault.address)).equal(parseEther('0'));
   });
   it('Checks the supply for vesting', async () => {
     const { mockVesting } = testEnv;
-    expect(await plmyTokenV2.balanceOf(mockVesting.address)).equal(parseEther('700000000'));
+    expect(await plmyTokenV2.balanceOf(mockVesting.address)).equal(parseEther('10000000'));
   });
 });

@@ -5,6 +5,8 @@ import {
   getPlmyToken,
   getInitializableAdminUpgradeabilityProxy,
   deployRewardsVault,
+  deployMintableErc20,
+  insertContractAddressInDb,
 } from './../helpers/contracts-helpers';
 import { parseEther } from 'ethers/lib/utils';
 import { TestEnv, makeSuite } from './helpers/make-suite';
@@ -12,6 +14,7 @@ import { getEthersSigners } from '../helpers/contracts-helpers';
 import { ethers } from 'hardhat';
 import { zeroAddress } from 'ethereumjs-util';
 import { ZERO_ADDRESS } from '../helpers/constants';
+import { eContractid } from '../helpers/types';
 
 const { expect } = require('chai');
 
@@ -51,6 +54,11 @@ makeSuite('Palmy rewards vault', (testEnv: TestEnv) => {
     const { rewardsVault, mockIncentivesController } = testEnv;
     const [user1] = await getEthersSigners();
     const plmyToken = await getPlmyToken(await mockIncentivesController._token());
+    const mockERC20 = await deployMintableErc20(['test', 'test', 18]);
+    insertContractAddressInDb(eContractid.MintableErc20, mockERC20.address);
+    await mockERC20.mint(parseEther('100000000'));
+    await mockERC20.transfer(rewardsVault.address, parseEther('100000000'));
+
     const dummyIncentivesController = (await ethers.getContractFactory(
       'MockIncentivesController'
     )) as MockIncentivesController__factory;

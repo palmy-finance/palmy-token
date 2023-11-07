@@ -9,11 +9,7 @@ import { Contract, Signer, utils, ethers, BytesLike } from 'ethers';
 
 import { getDb, DRE, waitForTx } from './misc-utils';
 import { tEthereumAddress, eContractid, tStringTokenSmallUnits } from './types';
-import {
-  MOCK_ETH_ADDRESS,
-  SUPPORTED_ETHERSCAN_NETWORKS,
-  getVestingOwnerPerNetwork,
-} from './constants';
+import { MOCK_ETH_ADDRESS, getVestingOwnerPerNetwork } from './constants';
 import BigNumber from 'bignumber.js';
 import { Ierc20Detailed } from '../types/Ierc20Detailed';
 import { InitializableAdminUpgradeabilityProxy } from '../types/InitializableAdminUpgradeabilityProxy';
@@ -324,7 +320,7 @@ export const newVestingSchedule = async (instance: TokenVesting, input: VestingI
   );
 };
 
-export const getMintableErc20 = async (address: tEthereumAddress) => {
+export const getMintableErc20 = async (address?: tEthereumAddress) => {
   return await getContract<MintableErc20>(
     eContractid.MintableErc20,
     address ||
