@@ -26,9 +26,7 @@ task(
   console.log(`\n- ${TokenVesting} exporting...`);
 
   console.log(`\Exporting ${TokenVesting} calldata ...`);
-  const tokenVesting = await exportVestingDeploymentCallData(
-    await getVestingOwnerPerNetwork(network)
-  );
+  const tokenVesting = await exportVestingDeploymentCallData(network);
   await saveDeploymentCallData(TokenVesting, tokenVesting);
   console.log(`\tFinished ${TokenVesting} implementation exporting`);
 });

@@ -7,7 +7,6 @@ import {
   getContract,
   getTokenVesting,
   getPalmyRewardsVault,
-  getPalmyRewardsVaultProxy,
 } from '../../helpers/contracts-helpers';
 import { waitForTx } from '../../helpers/misc-utils';
 import { ZERO_ADDRESS } from '../../helpers/constants';
@@ -35,7 +34,7 @@ task(`initialize-${PlmyToken}`, `Initialize the ${PlmyToken} proxy contract`)
     const plmyTokenImpl = await getPlmyTokenImpl();
     const plmyToken = await getPlmyToken();
     const tokenVesting = await getTokenVesting();
-    const rewardsVault = await getPalmyRewardsVaultProxy();
+    const rewardsVaultProxy = await getPalmyRewardsVault();
     const plmyTokenProxy = await getContract<InitializableAdminUpgradeabilityProxy>(
       eContractid.InitializableAdminUpgradeabilityProxy,
       plmyToken.address
@@ -62,7 +61,7 @@ task(`initialize-${PlmyToken}`, `Initialize the ${PlmyToken} proxy contract`)
     // If any other testnet, initialize for development purposes
     const plmyTokenEncodedInitialize = plmyTokenImpl.interface.encodeFunctionData('initialize', [
       tokenVesting.address,
-      rewardsVault.address,
+      rewardsVaultProxy.address,
       ZERO_ADDRESS,
     ]);
 

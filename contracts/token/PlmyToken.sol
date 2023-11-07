@@ -44,12 +44,10 @@ contract PlmyToken is ERC20, VersionedInitializable {
 
   bytes32 public DOMAIN_SEPARATOR;
   bytes public constant EIP712_REVISION = bytes('1');
-  bytes32 internal constant EIP712_DOMAIN = keccak256(
-    'EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'
-  );
-  bytes32 public constant PERMIT_TYPEHASH = keccak256(
-    'Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)'
-  );
+  bytes32 internal constant EIP712_DOMAIN =
+    keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
+  bytes32 public constant PERMIT_TYPEHASH =
+    keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
 
   event SnapshotDone(address owner, uint128 oldValue, uint128 newValue);
 
@@ -128,7 +126,7 @@ contract PlmyToken is ERC20, VersionedInitializable {
   /**
    * @dev returns the revision of the implementation contract
    */
-  function getRevision() internal override pure returns (uint256) {
+  function getRevision() internal pure override returns (uint256) {
     return REVISION;
   }
 
@@ -138,11 +136,7 @@ contract PlmyToken is ERC20, VersionedInitializable {
    * @param oldValue The value before the operation that is gonna be executed after the snapshot
    * @param newValue The value after the operation
    */
-  function _writeSnapshot(
-    address owner,
-    uint128 oldValue,
-    uint128 newValue
-  ) internal {
+  function _writeSnapshot(address owner, uint128 oldValue, uint128 newValue) internal {
     uint128 currentBlock = uint128(block.number);
 
     uint256 ownerCountOfSnapshots = _countsSnapshots[owner];
@@ -171,11 +165,7 @@ contract PlmyToken is ERC20, VersionedInitializable {
    * @param to the to address
    * @param amount the amount to transfer
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
     if (from == to) {
       return;
     }

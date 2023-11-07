@@ -56,7 +56,28 @@ const config: HardhatUserConfig = {
     outDir: 'types',
   },
   etherscan: {
-    apiKey: ETHERSCAN_KEY,
+    apiKey: {
+      testnet: 'N/A',
+      oasys: 'N/A',
+    },
+    customChains: [
+      {
+        chainId: 9372,
+        network: 'testnet',
+        urls: {
+          apiURL: 'https://explorer.testnet.oasys.games/api',
+          browserURL: 'https://explorer.testnet.oasys.games',
+        },
+      },
+      {
+        chainId: 248,
+        network: 'oasys',
+        urls: {
+          apiURL: 'https://explorer.oasys.games/api',
+          browserURL: 'https://explorer.oasys.games',
+        },
+      },
+    ],
   },
   mocha: {
     timeout: 0,
@@ -109,6 +130,19 @@ const config: HardhatUserConfig = {
       blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
       gasMultiplier: DEFAULT_GAS_PRICE,
       chainId: 248,
+      accounts: {
+        mnemonic: MNEMONIC,
+        path: MNEMONIC_PATH,
+        initialIndex: 0,
+        count: 20,
+      },
+    },
+    testnet: {
+      url: 'https://rpc.testnet.oasys.games',
+      hardfork: HARDFORK,
+      blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT * 30,
+      gasMultiplier: DEFAULT_GAS_PRICE * 30,
+      chainId: 9372,
       accounts: {
         mnemonic: MNEMONIC,
         path: MNEMONIC_PATH,

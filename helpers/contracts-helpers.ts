@@ -9,7 +9,11 @@ import { Contract, Signer, utils, ethers, BytesLike } from 'ethers';
 
 import { getDb, DRE, waitForTx } from './misc-utils';
 import { tEthereumAddress, eContractid, tStringTokenSmallUnits } from './types';
-import { MOCK_ETH_ADDRESS, SUPPORTED_ETHERSCAN_NETWORKS } from './constants';
+import {
+  MOCK_ETH_ADDRESS,
+  SUPPORTED_ETHERSCAN_NETWORKS,
+  getVestingOwnerPerNetwork,
+} from './constants';
 import BigNumber from 'bignumber.js';
 import { Ierc20Detailed } from '../types/Ierc20Detailed';
 import { InitializableAdminUpgradeabilityProxy } from '../types/InitializableAdminUpgradeabilityProxy';
@@ -19,6 +23,7 @@ import { fromRpcSig, ECDSASignature } from 'ethereumjs-util';
 import { DoubleTransferHelper } from '../types/DoubleTransferHelper';
 import { MockTransferHook } from '../types/MockTransferHook';
 import { verifyContract } from './etherscan-verification';
+import { eEthereumNetwork } from './types-common';
 
 export const saveDeploymentCallData = async (contractId: string, callData: BytesLike) => {
   const currentNetwork = DRE.network.name;
@@ -49,20 +54,31 @@ export const registerContractInJsonDb = async (contractId: string, contractInsta
     console.log();
   }
 
-  await getDb()
-    .set(`${contractId}.${currentNetwork}`, {
-      address: contractInstance.address,
-      deployer: contractInstance.deployTransaction.from,
-    })
-    .write();
+  await registerContractAddressInJsonDb(
+    contractId,
+    contractInstance.address,
+    contractInstance.deployTransaction.from
+  );
 };
-
 export const insertContractAddressInDb = async (id: eContractid, address: tEthereumAddress) =>
   await getDb()
     .set(`${id}.${DRE.network.name}`, {
       address,
     })
     .write();
+export const registerContractAddressInJsonDb = async (
+  contractId: string,
+  address: string,
+  deployer: string
+) => {
+  const currentNetwork = DRE.network.name;
+  await getDb()
+    .set(`${contractId}.${currentNetwork}`, {
+      address: address,
+      deployer: deployer,
+    })
+    .write();
+};
 
 export const getEthersSigners = async (): Promise<Signer[]> =>
   await Promise.all(await DRE.ethers.getSigners());
@@ -160,21 +176,41 @@ export const exportRewardsVaultCallData = async () => {
 export const deployMintableErc20 = async ([name, symbol, decimals]: [string, string, number]) =>
   await deployContract<MintableErc20>(eContractid.MintableErc20, [name, symbol, decimals]);
 
-export const deployVesting = async (plmyTokenAddress: string, owner: string, verify?: boolean) => {
-  const id = eContractid.TokenVesting;
-  const args = [plmyTokenAddress, owner];
-  const instance = await deployContract<TokenVesting>(id, args);
-  await instance.deployTransaction.wait();
-  if (verify) {
-    await verifyContract(id, instance.address, args);
+export const deployToOasysTestnet = async (id: eContractid, verify?: boolean) => {
+  const path = require('path');
+  const fs = require('fs');
+  const dir = path.join(__dirname, '..', '.deployments', 'calldata', 'testnet');
+  const file = path.join(dir, `${id}.calldata`);
+  if (!fs.existsSync(file)) {
+    throw new Error(`File ${file} not found`);
   }
-  return instance;
+  const calldata = fs.readFileSync(file, 'utf8');
+  const signer = (await getEthersSigners())[0];
+  const tx = await signer.sendTransaction({
+    data: calldata,
+    to: undefined,
+    type: 2,
+  });
+  const receipt = await tx.wait();
+  await registerContractAddressInJsonDb(id, receipt.contractAddress!, receipt.from);
+  console.log(
+    `\t ${id} deployed tx: ${receipt.transactionHash}, address: ${receipt.contractAddress}`
+  );
+  return receipt;
 };
 
-export const exportVestingDeploymentCallData = async (initialOwner: string) => {
+export const exportVestingDeploymentCallData = async (network: eEthereumNetwork) => {
   const id = eContractid.TokenVesting;
-  const args: string[] = [initialOwner];
-  return await getDeploymentCallData(id, args);
+  return await getDeploymentCallData(id, getDeployArgs(network, id));
+};
+
+export const getDeployArgs = (network: eEthereumNetwork, id: eContractid) => {
+  switch (id) {
+    case eContractid.TokenVesting:
+      return [getVestingOwnerPerNetwork(network)];
+    default:
+      return [];
+  }
 };
 
 export const deployMockVesting = async (
@@ -241,19 +277,10 @@ export const getPlmyToken = async (address?: tEthereumAddress) => {
 
 export const getPalmyRewardsVaultImpl = async (address?: tEthereumAddress) => {
   return await getContract<PalmyRewardsVault>(
-    eContractid.PalmyRewardsVaultImpl,
+    eContractid.PalmyRewardsVault,
     address ||
       (
-        await getDb().get(`${eContractid.PalmyRewardsVaultImpl}.${DRE.network.name}`).value()
-      ).address
-  );
-};
-export const getPalmyRewardsVaultProxy = async (address?: tEthereumAddress) => {
-  return await getContract<InitializableAdminUpgradeabilityProxy>(
-    eContractid.PalmyRewardsVaultProxy,
-    address ||
-      (
-        await getDb().get(`${eContractid.PalmyRewardsVaultProxy}.${DRE.network.name}`).value()
+        await getDb().get(`${eContractid.PalmyRewardsVault}.${DRE.network.name}`).value()
       ).address
   );
 };
@@ -263,7 +290,7 @@ export const getPalmyRewardsVault = async (address?: tEthereumAddress) => {
     eContractid.PalmyRewardsVault,
     address ||
       (
-        await getDb().get(`${eContractid.PalmyRewardsVault}.${DRE.network.name}`).value()
+        await getDb().get(`${eContractid.PalmyRewardsVaultProxy}.${DRE.network.name}`).value()
       ).address
   );
 };
