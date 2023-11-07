@@ -38,13 +38,14 @@
     "shibuya:deploy-TokenVesting": "npm run hardhat-shibuya -- deploy-TokenVesting --verify",
     "shiden:initialize-PlmyToken": "npm run hardhat-shiden -- initialize-PlmyToken --admin ${PLMY_ADMIN:-''} --onlyProxy",
     "astar:initialize-PlmyToken": "npm run hardhat-astar -- initialize-PlmyToken --admin ${PLMY_ADMIN:-''} --onlyProxy",
-    "oasys:exporting": "npm run hardhat-oasys -- oasys-deployment",
+    "oasys:deployment": "npm run hardhat-oasys -- oasys-deployment",
     "testnet:deployment": "npm run hardhat-testnet -- oasys-deployment",
+    "testnet:verification": "npm run hardhat-testnet -- verification",
     "ci:clean": "rm -rf ./artifacts ./cache ./types"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",
-    "@nomiclabs/hardhat-etherscan": "^2.1.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.1.0",
     "@typechain/ethers-v5": "^4.0.0",

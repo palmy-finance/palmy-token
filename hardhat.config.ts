@@ -56,7 +56,28 @@ const config: HardhatUserConfig = {
     outDir: 'types',
   },
   etherscan: {
-    apiKey: ETHERSCAN_KEY,
+    apiKey: {
+      testnet: 'N/A',
+      oasys: 'N/A',
+    },
+    customChains: [
+      {
+        chainId: 9372,
+        network: 'testnet',
+        urls: {
+          apiURL: 'https://explorer.testnet.oasys.games/api',
+          browserURL: 'https://explorer.testnet.oasys.games',
+        },
+      },
+      {
+        chainId: 248,
+        network: 'oasys',
+        urls: {
+          apiURL: 'https://explorer.oasys.games/api',
+          browserURL: 'https://explorer.oasys.games',
+        },
+      },
+    ],
   },
   mocha: {
     timeout: 0,

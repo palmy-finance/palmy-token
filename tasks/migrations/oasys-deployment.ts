@@ -3,8 +3,6 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { eEthereumNetwork } from '../../helpers/types-common';
 import { eContractid } from '../../helpers/types';
-import { checkVerification } from '../../helpers/etherscan-verification';
-import { getPlmyAdminPerNetwork } from '../../helpers/constants';
 import { deployToOasysTestnet } from '../../helpers/contracts-helpers';
 require('dotenv').config();
 
@@ -20,7 +18,9 @@ task('oasys-deployment', 'Deployment in oasys network').setAction(async ({}, loc
     return;
   }
   await deployToOasysTestnet(eContractid.PlmyToken);
+  await deployToOasysTestnet(eContractid.PlmyTokenImpl);
   await deployToOasysTestnet(eContractid.PlmyTokenV2);
+  await deployToOasysTestnet(eContractid.PalmyRewardsVaultProxy);
   await deployToOasysTestnet(eContractid.PalmyRewardsVault);
   await deployToOasysTestnet(eContractid.TokenVesting);
   console.log('\n✔️ Finished deploying Oasys Testnet Enviroment. ✔️');

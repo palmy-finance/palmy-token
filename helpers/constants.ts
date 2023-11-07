@@ -36,9 +36,9 @@ export const getPlmyAdminPerNetwork = (network: eEthereumNetwork): tEthereumAddr
     {
       [eEthereumNetwork.coverage]: ZERO_ADDRESS,
       [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
-      [eEthereumNetwork.kovan]: '0x8134929c3dcb1b8b82f27f53424b959fb82182f2', // TODO: fix
-      [eEthereumNetwork.testnet]: '0xCBe964DC48dB9106088EB76Bb2FAD8D5a1bcdfbD', // TODO: fix
-      [eEthereumNetwork.oasys]: '0x43BB799709758c266038cd56FC6aeF38c427f39E', // TODO: fix
+      [eEthereumNetwork.kovan]: ZERO_ADDRESS, // TODO: fix
+      [eEthereumNetwork.testnet]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
+      [eEthereumNetwork.oasys]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
     },
     network
   );
@@ -48,9 +48,9 @@ export const getVestingOwnerPerNetwork = (network: eEthereumNetwork): tEthereumA
     {
       [eEthereumNetwork.coverage]: ZERO_ADDRESS,
       [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
-      [eEthereumNetwork.kovan]: '0x8134929c3dcb1b8b82f27f53424b959fb82182f2', // TODO: fix
-      [eEthereumNetwork.testnet]: '0xCBe964DC48dB9106088EB76Bb2FAD8D5a1bcdfbD', // TODO: fix
-      [eEthereumNetwork.oasys]: '0x43BB799709758c266038cd56FC6aeF38c427f39E', // TODO: fix
+      [eEthereumNetwork.kovan]: ZERO_ADDRESS,
+      [eEthereumNetwork.testnet]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
+      [eEthereumNetwork.oasys]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
     },
     network
   );
