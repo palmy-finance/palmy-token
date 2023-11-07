@@ -7,9 +7,13 @@ import { checkVerification } from '../../helpers/etherscan-verification';
 import { getPlmyAdminPerNetwork } from '../../helpers/constants';
 require('dotenv').config();
 
-task('initialization', 'Contract Initialization').setAction(async ({}, localBRE) => {
+task('token-initialization', 'Contract Initialization').setAction(async ({}, localBRE) => {
   const DRE: HardhatRuntimeEnvironment = await localBRE.run('set-dre');
   const network = DRE.network.name as eEthereumNetwork;
-
+  await DRE.run(`initialize-${eContractid.PlmyToken}`);
+  console.log('\n✔️ Finished the initialization of the Plmy Token Mainnet Environment. ✔️');
+  console.log('\n Upgrading PlmyToken to V2 ✔️');
+  await DRE.run(`upgrade-${eContractid.PlmyToken}`);
+  console.log('\n✔️ Finished the upgrade of the Plmy Token Mainnet Environment. ✔️');
   console.log('\n✔️ Finished the deployment of the Plmy Token Shiden Enviroment. ✔️');
 });
