@@ -4,6 +4,7 @@ import {
   getEthersSigners,
   getPalmyRewardsVaultImpl,
   getPalmyRewardsVault,
+  getInitializableAdminUpgradeabilityProxy,
 } from '../../helpers/contracts-helpers';
 import { waitForTx } from '../../helpers/misc-utils';
 import {
@@ -30,7 +31,11 @@ task(
     localBRE.network.name as eEthereumNetwork
   );
   const rewardsVaultImpl = await getPalmyRewardsVaultImpl();
-  const rewardsVaultProxy = await getPalmyRewardsVault();
+  const rewardsVaultProxy = await getInitializableAdminUpgradeabilityProxy(
+    (
+      await getPalmyRewardsVault()
+    ).address
+  );
   const woas = await getWOASTokenPerNetwork(localBRE.network.name as eEthereumNetwork);
   if (!rewardsVaultImpl.address || rewardsVaultImpl.address == ZERO_ADDRESS) {
     throw new Error('Missing rewardsVaultImpl');

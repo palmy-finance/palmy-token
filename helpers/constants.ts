@@ -29,25 +29,13 @@ export const getPlmyTokenDomainSeparatorPerNetwork = (
     },
     network
   );
-export const getPalmyTokenPerNetwork = (network: eEthereumNetwork): tEthereumAddress =>
-  getParamPerNetwork<tEthereumAddress>(
-    {
-      [eEthereumNetwork.coverage]: ZERO_ADDRESS,
-      [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
-      [eEthereumNetwork.kovan]: ZERO_ADDRESS,
-      [eEthereumNetwork.testnet]: '0x6a09fFa7ea2D6e89a195BD8B589242ccba0984A8',
-      [eEthereumNetwork.oasys]: 'TODO',
-    },
-    network
-  );
-
 export const getIncentivesControllerPerNetwork = (network: eEthereumNetwork): tEthereumAddress =>
   getParamPerNetwork<tEthereumAddress>(
     {
       [eEthereumNetwork.coverage]: ZERO_ADDRESS,
       [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
       [eEthereumNetwork.kovan]: ZERO_ADDRESS,
-      [eEthereumNetwork.testnet]: '0xF1eF2D32A3dC696d9A03cDD6EC3961046757D001', // proxy
+      [eEthereumNetwork.testnet]: '0xF9989396817007b7Bb9290f0885821D8798c79e1', // proxy
       [eEthereumNetwork.oasys]: 'TODO',
     },
     network

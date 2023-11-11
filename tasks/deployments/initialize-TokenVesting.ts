@@ -5,13 +5,10 @@ import {
   getPalmyRewardsVaultImpl,
   getPalmyRewardsVault,
   getTokenVesting,
+  getPlmyToken,
 } from '../../helpers/contracts-helpers';
 import { waitForTx } from '../../helpers/misc-utils';
-import {
-  ZERO_ADDRESS,
-  getPalmyTokenPerNetwork,
-  getWOASTokenPerNetwork,
-} from '../../helpers/constants';
+import { ZERO_ADDRESS, getWOASTokenPerNetwork } from '../../helpers/constants';
 import { eEthereumNetwork } from '../../helpers/types-common';
 
 const { TokenVesting } = eContractid;
@@ -27,8 +24,8 @@ task(`initialize-${TokenVesting}`, `Initialize the ${TokenVesting} proxy contrac
 
     console.log(`\n- ${TokenVesting} initialization`);
     const vesting = await getTokenVesting();
-    const palmyToken = await getPalmyTokenPerNetwork(network);
-    await vesting.initialzie(palmyToken);
+    const palmyToken = await getPlmyToken();
+    await vesting.initialzie(palmyToken.address);
 
     console.log('\tFinished Plmy Token and Transparent Proxy initialization');
   }
