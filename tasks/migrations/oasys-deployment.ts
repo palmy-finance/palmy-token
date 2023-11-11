@@ -3,7 +3,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { eEthereumNetwork } from '../../helpers/types-common';
 import { eContractid } from '../../helpers/types';
-import { deployToOasysTestnet } from '../../helpers/contracts-helpers';
+import { deployToOasysTestnet, printContracts } from '../../helpers/contracts-helpers';
 require('dotenv').config();
 
 task('oasys-deployment', 'Deployment in oasys network').setAction(async ({}, localBRE) => {
@@ -24,4 +24,5 @@ task('oasys-deployment', 'Deployment in oasys network').setAction(async ({}, loc
   await deployToOasysTestnet(eContractid.PalmyRewardsVault);
   await deployToOasysTestnet(eContractid.TokenVesting);
   console.log('\n✔️ Finished deploying Oasys Testnet Enviroment. ✔️');
+  printContracts();
 });

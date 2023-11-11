@@ -14,4 +14,6 @@ task('token-initialization', 'Contract Initialization').setAction(async ({}, loc
   await DRE.run(`upgrade-${eContractid.PlmyToken}`);
   console.log('\n✔️ Finished the upgrade of the Plmy Token Mainnet Environment. ✔️');
   console.log('\n✔️ Finished the deployment of the Plmy Token Shiden Enviroment. ✔️');
+  await DRE.run(`initialize-${eContractid.PalmyRewardsVault}`);
+  await DRE.run(`initialize-${eContractid.TokenVesting}`);
 });
