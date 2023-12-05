@@ -5,6 +5,8 @@ import { eEthereumNetwork } from './types-common';
 export const BUIDLEREVM_CHAINID = 31337;
 export const COVERAGE_CHAINID = 1337;
 
+export const PERMISSIONED_CONTRACT_FACTORY_ADDRESS = '0x123e3ae459a8D049F27Ba62B8a5D48c68A100EBC';
+
 export const ZERO_ADDRESS: tEthereumAddress = '0x0000000000000000000000000000000000000000';
 export const ONE_ADDRESS = '0x0000000000000000000000000000000000000001';
 export const MAX_UINT_AMOUNT =
@@ -52,6 +54,19 @@ export const getWOASTokenPerNetwork = (network: eEthereumNetwork): tEthereumAddr
     network
   );
 
+export const getPlmyTokenTreasuryAddressPerNetwork = (
+  network: eEthereumNetwork
+): tEthereumAddress =>
+  getParamPerNetwork<tEthereumAddress>(
+    {
+      [eEthereumNetwork.coverage]: ZERO_ADDRESS,
+      [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
+      [eEthereumNetwork.kovan]: ZERO_ADDRESS,
+      [eEthereumNetwork.testnet]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
+      [eEthereumNetwork.oasys]: 'TODO',
+    },
+    network
+  );
 // PlmyProtoGovernance address as admin of PlmyToken and Migrator
 export const getPlmyAdminPerNetwork = (network: eEthereumNetwork): tEthereumAddress =>
   getParamPerNetwork<tEthereumAddress>(
