@@ -9,7 +9,11 @@ import { Contract, Signer, utils, ethers, BytesLike } from 'ethers';
 
 import { getDb, DRE, waitForTx } from './misc-utils';
 import { tEthereumAddress, eContractid, tStringTokenSmallUnits } from './types';
-import { MOCK_ETH_ADDRESS, getVestingOwnerPerNetwork } from './constants';
+import {
+  MOCK_ETH_ADDRESS,
+  PERMISSIONED_CONTRACT_FACTORY_ADDRESS,
+  getVestingOwnerPerNetwork,
+} from './constants';
 import BigNumber from 'bignumber.js';
 import { Ierc20Detailed } from '../types/Ierc20Detailed';
 import { InitializableAdminUpgradeabilityProxy } from '../types/InitializableAdminUpgradeabilityProxy';
@@ -20,7 +24,20 @@ import { DoubleTransferHelper } from '../types/DoubleTransferHelper';
 import { MockTransferHook } from '../types/MockTransferHook';
 import { verifyContract } from './etherscan-verification';
 import { eEthereumNetwork } from './types-common';
+import { IPermissionedContractFactory__factory } from '../types/factories/IPermissionedContractFactory__factory';
 
+export const getOasysDeploymentAddress = async (contractId: string, callData: BytesLike) => {
+  // Calculate the length of calldata in hex, padding to 64 characters
+  const instance = IPermissionedContractFactory__factory.connect(
+    PERMISSIONED_CONTRACT_FACTORY_ADDRESS,
+    DRE.ethers.provider
+  );
+  return await instance.getDeploymentAddress(callData, toBytes32(contractId));
+};
+
+const toBytes32 = (value: string) => {
+  return utils.formatBytes32String(value);
+};
 export const saveDeploymentCallData = async (contractId: string, callData: BytesLike) => {
   const currentNetwork = DRE.network.name;
   // save calldata into .deployments/calldata/<network>/<contractId>.calldata
@@ -34,6 +51,14 @@ export const saveDeploymentCallData = async (contractId: string, callData: Bytes
   }
   const fileName = path.join(dir, `${contractId}.calldata`);
   fs.writeFileSync(fileName, callData);
+  if ((currentNetwork as eEthereumNetwork) == eEthereumNetwork.oasys) {
+    await registerContractAddressAndSaltInJsonDb(
+      contractId,
+      await getOasysDeploymentAddress(contractId, callData),
+      '',
+      toBytes32(contractId)
+    );
+  }
 };
 
 export const registerContractInJsonDb = async (contractId: string, contractInstance: Contract) => {
@@ -72,6 +97,22 @@ export const registerContractAddressInJsonDb = async (
     .set(`${contractId}.${currentNetwork}`, {
       address: address,
       deployer: deployer,
+    })
+    .write();
+};
+
+const registerContractAddressAndSaltInJsonDb = async (
+  contractId: string,
+  address: string,
+  deployer: string,
+  salt: string
+) => {
+  const currentNetwork = DRE.network.name;
+  await getDb()
+    .set(`${contractId}.${currentNetwork}`, {
+      address: address,
+      deployer: deployer,
+      salt: salt,
     })
     .write();
 };

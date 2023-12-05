@@ -9,8 +9,13 @@ import {
   getPalmyRewardsVault,
 } from '../../helpers/contracts-helpers';
 import { waitForTx } from '../../helpers/misc-utils';
-import { ZERO_ADDRESS, getPlmyAdminPerNetwork } from '../../helpers/constants';
+import {
+  ZERO_ADDRESS,
+  getPlmyAdminPerNetwork,
+  getPlmyTokenTreasuryAddressPerNetwork,
+} from '../../helpers/constants';
 import { eEthereumNetwork } from '../../helpers/types-common';
+import { parseEther } from 'ethers/lib/utils';
 
 const { PlmyToken } = eContractid;
 
@@ -73,5 +78,14 @@ task(`initialize-${PlmyToken}`, `Initialize the ${PlmyToken} proxy contract`)
       )
     );
 
+    console.log('Withdraw PLMY from vesting temporarily');
+    await waitForTx(await tokenVesting.withdraw(parseEther('10000000')));
+    console.log('Transfer PLMY to Treasury');
+    await waitForTx(
+      await plmyToken.transfer(
+        await getPlmyTokenTreasuryAddressPerNetwork(network),
+        parseEther('10000000')
+      )
+    );
     console.log('\tFinished Plmy Token and Transparent Proxy initialization');
   });
