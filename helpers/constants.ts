@@ -63,7 +63,7 @@ export const getPlmyTokenTreasuryAddressPerNetwork = (
       [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
       [eEthereumNetwork.kovan]: ZERO_ADDRESS,
       [eEthereumNetwork.testnet]: '0x21AFfDf04c787EB34f6Eda911d67CbA5D75d7773',
-      [eEthereumNetwork.oasys]: 'TODO',
+      [eEthereumNetwork.oasys]: '0x99F9f5D8094137E9dD2647c2a3D94C0F773da24f',
     },
     network
   );
