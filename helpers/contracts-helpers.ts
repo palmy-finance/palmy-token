@@ -26,16 +26,17 @@ import { verifyContract } from './etherscan-verification';
 import { eEthereumNetwork } from './types-common';
 import { IPermissionedContractFactory__factory } from '../types/factories/IPermissionedContractFactory__factory';
 
-export const getOasysDeploymentAddress = async (callData: BytesLike, salt?: BytesLike) => {
+export const getOasysDeploymentAddress = async (contractId: string, callData: BytesLike) => {
   // Calculate the length of calldata in hex, padding to 64 characters
   const instance = IPermissionedContractFactory__factory.connect(
     PERMISSIONED_CONTRACT_FACTORY_ADDRESS,
     DRE.ethers.provider
   );
-  return await instance.getDeploymentAddress(
-    callData,
-    salt || '0x0000000000000000000000000000000000000000000000000000000000000000'
-  );
+  return await instance.getDeploymentAddress(callData, toBytes32(contractId));
+};
+
+const toBytes32 = (value: string) => {
+  return utils.formatBytes32String(value);
 };
 export const saveDeploymentCallData = async (contractId: string, callData: BytesLike) => {
   const currentNetwork = DRE.network.name;
@@ -51,10 +52,11 @@ export const saveDeploymentCallData = async (contractId: string, callData: Bytes
   const fileName = path.join(dir, `${contractId}.calldata`);
   fs.writeFileSync(fileName, callData);
   if ((currentNetwork as eEthereumNetwork) == eEthereumNetwork.oasys) {
-    await registerContractAddressInJsonDb(
+    await registerContractAddressAndSaltInJsonDb(
       contractId,
-      await getOasysDeploymentAddress(callData),
-      ''
+      await getOasysDeploymentAddress(contractId, callData),
+      '',
+      toBytes32(contractId)
     );
   }
 };
@@ -95,6 +97,22 @@ export const registerContractAddressInJsonDb = async (
     .set(`${contractId}.${currentNetwork}`, {
       address: address,
       deployer: deployer,
+    })
+    .write();
+};
+
+const registerContractAddressAndSaltInJsonDb = async (
+  contractId: string,
+  address: string,
+  deployer: string,
+  salt: string
+) => {
+  const currentNetwork = DRE.network.name;
+  await getDb()
+    .set(`${contractId}.${currentNetwork}`, {
+      address: address,
+      deployer: deployer,
+      salt: salt,
     })
     .write();
 };
