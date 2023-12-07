@@ -77,15 +77,5 @@ task(`initialize-${PlmyToken}`, `Initialize the ${PlmyToken} proxy contract`)
         plmyTokenEncodedInitialize
       )
     );
-
-    console.log('Withdraw PLMY from vesting temporarily');
-    await waitForTx(await tokenVesting.withdraw(parseEther('10000000')));
-    console.log('Transfer PLMY to Treasury');
-    await waitForTx(
-      await plmyToken.transfer(
-        await getPlmyTokenTreasuryAddressPerNetwork(network),
-        parseEther('10000000')
-      )
-    );
     console.log('\tFinished Plmy Token and Transparent Proxy initialization');
   });
