@@ -41,6 +41,7 @@
     "oasys:deployment": "npm run hardhat-oasys -- oasys-deployment",
     "testnet:deployment": "npm run hardhat-testnet -- oasys-deployment",
     "testnet:verification": "npm run hardhat-testnet -- verification",
+    "oasys:verification": "npm run hardhat-oasys -- verification",
     "testnet:token-initialization": "npm run hardhat-testnet -- token-initialization",
     "oasys:token-initialization": "npm run hardhat-oasys -- token-initialization",
     "ci:clean": "rm -rf ./artifacts ./cache ./types"

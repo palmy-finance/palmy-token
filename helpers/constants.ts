@@ -38,7 +38,7 @@ export const getIncentivesControllerPerNetwork = (network: eEthereumNetwork): tE
       [eEthereumNetwork.hardhat]: ZERO_ADDRESS,
       [eEthereumNetwork.kovan]: ZERO_ADDRESS,
       [eEthereumNetwork.testnet]: '0xF9989396817007b7Bb9290f0885821D8798c79e1', // proxy
-      [eEthereumNetwork.oasys]: 'TODO',
+      [eEthereumNetwork.oasys]: '0x29C903EBEdAD12C813D4ce6f0fFfEd540d13Dc38',
     },
     network
   );
