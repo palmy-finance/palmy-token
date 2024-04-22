@@ -7,5 +7,7 @@ task('print-address-and-salt', 'print-address-and-salt').setAction(async ({}, lo
   Object.keys(dbJson).forEach((key) => {
     if (dbJson[key].oasys === undefined) return;
     console.log(`${key},${dbJson[key].oasys?.salt},${dbJson[key].oasys?.address}`);
+    dbJson[key].testnet.address = dbJson[key].oasys.address;
   });
+  db.write();
 });
