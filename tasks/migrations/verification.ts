@@ -7,6 +7,7 @@ import {
   getPalmyRewardsVaultImpl,
   getPlmyToken,
   getPlmyTokenImpl,
+  getPlmyTokenV2,
   getTokenVesting,
 } from '../../helpers/contracts-helpers';
 import { verifyContract } from '../../helpers/etherscan-verification';
@@ -23,6 +24,7 @@ task('verification', 'Verify contracts').setAction(async ({}, localBRE) => {
   await verifyContract(eContractid.PlmyToken, (await getPlmyToken()).address, []);
   await verifyContract(eContractid.PlmyToken, (await getPlmyTokenImpl()).address, []);
   await verifyContract(eContractid.PlmyTokenV2, (await getPlmyToken()).address, []);
+  await verifyContract(eContractid.PlmyTokenV2, (await getPlmyTokenV2()).address, []);
   await verifyContract(eContractid.PalmyRewardsVault, (await getPalmyRewardsVault()).address, []);
   await verifyContract(
     eContractid.PalmyRewardsVault,
